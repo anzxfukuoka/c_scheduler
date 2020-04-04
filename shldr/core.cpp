@@ -7,7 +7,7 @@
 
 #include <fstream>
 
-#define TASKSFILE "data.tasks"
+/*#define TASKSFILE "C:\\Users\\Anzx\\Desktop\\CR\\data.tasks"
 
 struct Task{
     char name[16];
@@ -40,9 +40,26 @@ void getall(){//?
 
 }
 
-void read(Task * task){//?
+bool read(Task * task){//?
+    FILE * f;
 
+    if ((f = fopen(TASKSFILE, "rb")) != NULL){
+
+        //fwrite(task, sizeof(Task), 1, f);
+        fread((char *)task, sizeof(Task), 1, f);
+    }
+    else
+    {
+        perror("ошибка записи");
+        fclose(f);
+        return false;
+    }
+
+    fclose(f);
+    return true;
 }
+
+*/
 
 //debug trash
 void time_now(){
