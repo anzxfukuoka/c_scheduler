@@ -2,8 +2,9 @@
 Файл модуля работы с файлами
 этот модул предоставляет две функции работы с файлами:
 
+void setpath(std::string p) - сеттер для путя к файлу
 void save(QVector<Task> tasks) - сохранить массив с записями в файл
-void save(Task tasks) - сохранить запись в файл
+void save(Task * task) - сохранить запись в файл
 QVector<Task> read() - считать массив с записями из файла
 
 при ошибке записи save() бросает исключение WRITEEXCEPTION
@@ -20,6 +21,8 @@ QVector<Task> read() - считать массив с записями из фа
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
+#include <string>
+
 
 #include <fstream>
 #include <cstring>
@@ -28,10 +31,8 @@ QVector<Task> read() - считать массив с записями из фа
 
 namespace ts { //task storage
 
-//debug
-#define TASKSFILE "C:\\Users\\Anzx\\Desktop\\CR\\data.tasks"
-
-FILE * tasksfile;
+//путь к файлу с запясями
+std::string path = "C:\\Users\\Anzx\\Desktop\\CR\\data2.tasks";
 
 int currpos = 0;
 
@@ -44,21 +45,24 @@ struct Task{
 };
 
 //ошибки
-
 #define NOFILEEXCEPTION "в файле нет записей"
 #define FILEEXCEPTION "ошибка чтения файла"
 #define WRITEEXCEPTION "ошибка записи"
 
+void setpath(std::string p){
+    path = p;
+}
+
 void save(Task * task){
     FILE * f;
 
-    if ((f = fopen(TASKSFILE, "ab")) != NULL){
+    if ((f = fopen(path.c_str(), "ab")) != NULL){
 
         fwrite(task, sizeof(Task), 1, f);
     }
     else
     {
-        perror("ошибка записи");
+        perror(WRITEEXCEPTION);
         fclose(f);
         throw WRITEEXCEPTION;
     }
@@ -66,7 +70,28 @@ void save(Task * task){
     fclose(f);
 }
 
-bool save()
+void save(QVector<Task> tasks){
+
+    FILE * f;
+
+    Task task;
+
+    if ((f = fopen(path.c_str(), "wb")) != NULL){
+
+        for(int i = 0; i < tasks.length(); i++){
+            task = tasks[i];
+            fwrite(&task, sizeof(Task), 1, f);
+        }
+    }
+    else
+    {
+        perror(WRITEEXCEPTION);
+        fclose(f);
+        throw WRITEEXCEPTION;
+    }
+
+    fclose(f);
+}
 
 int readone(FILE * fs, Task * next){
 
@@ -95,13 +120,13 @@ QVector<Task> read(){
     FILE * f;
     QVector<Task> tasks;
 
-    if ((f = fopen(TASKSFILE, "rb")) != NULL){
+    if ((f = fopen(path.c_str(), "rb")) != NULL){
         fseek(f, 0, SEEK_END);
         long lenght = ftell(f);
         int count = lenght/sizeof(Task);
 
         if(count == 0){
-            perror("в файле нет записей");
+            perror(NOFILEEXCEPTION);
             throw NOFILEEXCEPTION;
         }
 
@@ -115,7 +140,7 @@ QVector<Task> read(){
     }
     else
     {
-        perror("ошибка xntybz");
+        perror(FILEEXCEPTION);
         fclose(f);
         throw FILEEXCEPTION;
     }
