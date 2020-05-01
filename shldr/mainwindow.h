@@ -15,6 +15,19 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void on_savebtn_clicked();
+
+    void on_loadbtn_clicked();
+
+    void on_exportbtn_clicked();
+
+    void on_textEdit_textChanged();
+
+    void on_charcount_linkHovered(const QString &link);
+
+    void on_dateTimeEdit_dateChanged(const QDate &date);
+
 private:
     Ui::MainWindow *ui;
 };

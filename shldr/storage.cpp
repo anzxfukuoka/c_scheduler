@@ -8,7 +8,7 @@ void save(Task * task) - сохранить запись в файл
 QVector<Task> read() - считать массив с записями из файла
 
 при ошибке записи save() бросает исключение WRITEEXCEPTION
-при ошибке чтения read() бросает исключения FILEEXCEPTION и NOFILEEXCEPTION
+при ошибке чтения read() бросает исключения FILEEXCEPTION
 при использованнии данных фунуций их следует поместить в блок try catch
 
 подобнвй метот огранизации работы этого модуля был смотивированн простотой и скоростью реализации.
@@ -31,14 +31,23 @@ QVector<Task> read() - считать массив с записями из фа
 
 namespace ts { //task storage
 
+const int NAME_LEN = 16;
+const int DISC_LEN = 240;
+
 //путь к файлу с запясями
-std::string path = "C:\\Users\\Anzx\\Desktop\\CR\\data2.tasks";
+
+char *cuser = std::getenv("USERNAME");
+//std::cout << "cuser" << cuser << std::endl;
+std::string user(cuser);
+//std::cout << user << std::endl;
+
+std::string path = "C:/Users/" + user + "/shelduedata.tasks"; // "C:\\Users\\Anzx\\Desktop\\CR\\data2.tasks";
 
 int currpos = 0;
 
 struct Task{
-    char name[16];
-    char disc[240]; //описание
+    char name[NAME_LEN];
+    char disc[DISC_LEN]; //описание
     bool done;
     bool expired;
     time_t date;
@@ -125,24 +134,24 @@ QVector<Task> read(){
         long lenght = ftell(f);
         int count = lenght/sizeof(Task);
 
-        if(count == 0){
-            perror(NOFILEEXCEPTION);
-            throw NOFILEEXCEPTION;
+        if(count != 0){
+            //файл не пустой
+            Task * next = new Task;
+            int id;
+            while ((id = readone(f, next)) != -1) {
+               tasks.append(*next);
+            }
         }
-
-        Task * next = new Task;
-        int id;
-        while ((id = readone(f, next)) != -1) {
-           tasks.append(*next);
-        }
-
-
     }
     else
     {
-        perror(FILEEXCEPTION);
-        fclose(f);
-        throw FILEEXCEPTION;
+        //файла не существует
+        if((f = fopen(path.c_str(), "w")) == NULL){
+            //файл не удалось создать
+            perror(FILEEXCEPTION);
+            fclose(f);
+            throw FILEEXCEPTION;
+        }
     }
 
     fclose(f);
@@ -150,6 +159,27 @@ QVector<Task> read(){
 
 }
 
-
 }
 
+//тест модуля
+void storage_test(){
+    ts::Task * newt = new ts::Task;
+
+    strcpy(newt->name, "tea party");
+    strcpy(newt->disc, "uwu");
+    newt->done = false;
+    newt->expired = false;
+
+    time(&newt->date);
+
+    try {
+        QVector<ts::Task> tasks = ts::read();
+        //std::cout << sizeof (ts::Task) << std::endl;
+        //tasks.remove(2);
+        for(int i = 0; i < tasks.length(); i++)
+            printf("name: %s \tdisc: %s\t done: %d\t expired: %d\ttime: %s", tasks[i].name, tasks[i].disc, tasks[i].done, tasks[i].expired, asctime(localtime(&(tasks[i].date))));
+        ts::save(tasks);
+    } catch (char* somthing) {
+        std::cout << somthing << std::endl;
+    }
+}

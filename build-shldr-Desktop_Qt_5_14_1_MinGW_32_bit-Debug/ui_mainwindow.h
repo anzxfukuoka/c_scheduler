@@ -12,6 +12,7 @@
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QDateTimeEdit>
+#include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QListView>
 #include <QtWidgets/QMainWindow>
@@ -27,13 +28,17 @@ class Ui_MainWindow
 {
 public:
     QWidget *centralwidget;
-    QPushButton *pushButton;
+    QPushButton *loadbtn;
     QListView *listView;
-    QPushButton *pushButton_2;
-    QPushButton *pushButton_3;
+    QPushButton *savebtn;
     QTextEdit *textEdit;
     QLineEdit *lineEdit;
     QDateTimeEdit *dateTimeEdit;
+    QLabel *label;
+    QLabel *label_2;
+    QLabel *label_3;
+    QPushButton *exportbtn;
+    QLabel *charcount;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -44,27 +49,39 @@ public:
         MainWindow->resize(800, 600);
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
-        pushButton = new QPushButton(centralwidget);
-        pushButton->setObjectName(QString::fromUtf8("pushButton"));
-        pushButton->setGeometry(QRect(360, 20, 93, 28));
+        loadbtn = new QPushButton(centralwidget);
+        loadbtn->setObjectName(QString::fromUtf8("loadbtn"));
+        loadbtn->setGeometry(QRect(360, 20, 93, 28));
         listView = new QListView(centralwidget);
         listView->setObjectName(QString::fromUtf8("listView"));
-        listView->setGeometry(QRect(465, 10, 321, 531));
-        pushButton_2 = new QPushButton(centralwidget);
-        pushButton_2->setObjectName(QString::fromUtf8("pushButton_2"));
-        pushButton_2->setGeometry(QRect(360, 60, 93, 28));
-        pushButton_3 = new QPushButton(centralwidget);
-        pushButton_3->setObjectName(QString::fromUtf8("pushButton_3"));
-        pushButton_3->setGeometry(QRect(360, 100, 93, 28));
+        listView->setGeometry(QRect(465, 10, 321, 521));
+        savebtn = new QPushButton(centralwidget);
+        savebtn->setObjectName(QString::fromUtf8("savebtn"));
+        savebtn->setGeometry(QRect(360, 60, 93, 28));
         textEdit = new QTextEdit(centralwidget);
         textEdit->setObjectName(QString::fromUtf8("textEdit"));
-        textEdit->setGeometry(QRect(10, 140, 441, 271));
+        textEdit->setGeometry(QRect(20, 160, 431, 271));
         lineEdit = new QLineEdit(centralwidget);
         lineEdit->setObjectName(QString::fromUtf8("lineEdit"));
         lineEdit->setGeometry(QRect(20, 100, 331, 22));
         dateTimeEdit = new QDateTimeEdit(centralwidget);
         dateTimeEdit->setObjectName(QString::fromUtf8("dateTimeEdit"));
-        dateTimeEdit->setGeometry(QRect(20, 60, 194, 22));
+        dateTimeEdit->setGeometry(QRect(20, 50, 194, 22));
+        label = new QLabel(centralwidget);
+        label->setObjectName(QString::fromUtf8("label"));
+        label->setGeometry(QRect(20, 140, 55, 16));
+        label_2 = new QLabel(centralwidget);
+        label_2->setObjectName(QString::fromUtf8("label_2"));
+        label_2->setGeometry(QRect(20, 80, 91, 16));
+        label_3 = new QLabel(centralwidget);
+        label_3->setObjectName(QString::fromUtf8("label_3"));
+        label_3->setGeometry(QRect(20, 30, 55, 16));
+        exportbtn = new QPushButton(centralwidget);
+        exportbtn->setObjectName(QString::fromUtf8("exportbtn"));
+        exportbtn->setGeometry(QRect(360, 100, 93, 28));
+        charcount = new QLabel(centralwidget);
+        charcount->setObjectName(QString::fromUtf8("charcount"));
+        charcount->setGeometry(QRect(390, 440, 55, 16));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
@@ -82,9 +99,13 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "MainWindow", nullptr));
-        pushButton->setText(QCoreApplication::translate("MainWindow", "PushButton", nullptr));
-        pushButton_2->setText(QCoreApplication::translate("MainWindow", "PushButton", nullptr));
-        pushButton_3->setText(QCoreApplication::translate("MainWindow", "PushButton", nullptr));
+        loadbtn->setText(QCoreApplication::translate("MainWindow", "LOAD", nullptr));
+        savebtn->setText(QCoreApplication::translate("MainWindow", "SAVE", nullptr));
+        label->setText(QCoreApplication::translate("MainWindow", "\320\276\320\277\320\270\321\201\320\260\320\275\320\270\320\265", nullptr));
+        label_2->setText(QCoreApplication::translate("MainWindow", "\321\201\320\276\320\261\321\213\321\202\320\270\320\265", nullptr));
+        label_3->setText(QCoreApplication::translate("MainWindow", "\320\264\320\260\321\202\320\260", nullptr));
+        exportbtn->setText(QCoreApplication::translate("MainWindow", "EXPORT", nullptr));
+        charcount->setText(QCoreApplication::translate("MainWindow", "0/240", nullptr));
     } // retranslateUi
 
 };
