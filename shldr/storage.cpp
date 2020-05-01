@@ -23,7 +23,6 @@ QVector<Task> read() - считать массив с записями из фа
 #include <time.h>
 #include <string>
 
-
 #include <fstream>
 #include <cstring>
 
@@ -157,6 +156,14 @@ QVector<Task> read(){
     fclose(f);
     return tasks;
 
+}
+
+std::string to_string(Task t){
+    return "name: " + std::string(t.name) +
+           //"\ndisc: " + std::string(t.disc) +
+           "\n done: " + std::to_string(t.done) +
+           "\n expired: " + std::to_string(t.expired) +
+           "\ntime: " + std::string(asctime(localtime(&(t.date))));
 }
 
 }

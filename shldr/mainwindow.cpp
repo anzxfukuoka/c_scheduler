@@ -6,6 +6,8 @@
 #include <QLabel>
 #include <QFormLayout>
 #include <QDialogButtonBox>
+#include <QStringListModel>
+#include <QString>
 
 #include <stdlib.h>
 #include <iostream>
@@ -17,6 +19,23 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    try {
+        QVector<ts::Task> tasks = ts::read();
+
+        QStringListModel *model = new  QStringListModel(this);
+        QStringList list;
+
+        for(int i = 0; i < tasks.length(); i++){
+            list << tasks[i].name; // QString::fromStdString(ts::to_string(tasks[i]));
+        }
+
+        model->setStringList(list);
+        ui->listView->setModel(model);
+
+    } catch (char* somthing) {
+        std::cout << somthing << std::endl;
+    }
+
 }
 
 MainWindow::~MainWindow()
@@ -126,6 +145,11 @@ void MainWindow::on_charcount_linkHovered(const QString &link)
 }
 
 void MainWindow::on_dateTimeEdit_dateChanged(const QDate &date)
+{
+
+}
+
+void MainWindow::on_scrollArea_customContextMenuRequested(const QPoint &pos)
 {
 
 }

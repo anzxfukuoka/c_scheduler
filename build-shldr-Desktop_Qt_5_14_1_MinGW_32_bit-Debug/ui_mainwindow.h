@@ -12,6 +12,7 @@
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QDateTimeEdit>
+#include <QtWidgets/QFrame>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QListView>
@@ -29,7 +30,6 @@ class Ui_MainWindow
 public:
     QWidget *centralwidget;
     QPushButton *loadbtn;
-    QListView *listView;
     QPushButton *savebtn;
     QTextEdit *textEdit;
     QLineEdit *lineEdit;
@@ -39,6 +39,8 @@ public:
     QLabel *label_3;
     QPushButton *exportbtn;
     QLabel *charcount;
+    QFrame *line;
+    QListView *listView;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -52,9 +54,6 @@ public:
         loadbtn = new QPushButton(centralwidget);
         loadbtn->setObjectName(QString::fromUtf8("loadbtn"));
         loadbtn->setGeometry(QRect(360, 20, 93, 28));
-        listView = new QListView(centralwidget);
-        listView->setObjectName(QString::fromUtf8("listView"));
-        listView->setGeometry(QRect(465, 10, 321, 521));
         savebtn = new QPushButton(centralwidget);
         savebtn->setObjectName(QString::fromUtf8("savebtn"));
         savebtn->setGeometry(QRect(360, 60, 93, 28));
@@ -82,6 +81,14 @@ public:
         charcount = new QLabel(centralwidget);
         charcount->setObjectName(QString::fromUtf8("charcount"));
         charcount->setGeometry(QRect(390, 440, 55, 16));
+        line = new QFrame(centralwidget);
+        line->setObjectName(QString::fromUtf8("line"));
+        line->setGeometry(QRect(20, 450, 431, 20));
+        line->setFrameShape(QFrame::HLine);
+        line->setFrameShadow(QFrame::Sunken);
+        listView = new QListView(centralwidget);
+        listView->setObjectName(QString::fromUtf8("listView"));
+        listView->setGeometry(QRect(460, 20, 311, 501));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));

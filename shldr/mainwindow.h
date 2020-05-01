@@ -28,6 +28,8 @@ private slots:
 
     void on_dateTimeEdit_dateChanged(const QDate &date);
 
+    void on_scrollArea_customContextMenuRequested(const QPoint &pos);
+
 private:
     Ui::MainWindow *ui;
 };
