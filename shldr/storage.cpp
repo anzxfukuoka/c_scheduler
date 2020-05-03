@@ -159,6 +159,7 @@ QVector<Task> read(){
 
 }
 
+//ту стд::стринг
 std::string to_string(Task t){
     return "name: " + std::string(t.name) +
            //"\ndisc: " + std::string(t.disc) +

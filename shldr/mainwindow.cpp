@@ -33,38 +33,49 @@ ts::Task * selectedtask;
 //содержащая один столбик и n строчек, где n длинна списка.
 QStringListModel *model;
 
-//обновить ListView
-//
+//обнвение ListView
+//показать определеннй список задач
 void updateListW(Ui::MainWindow *ui, QVector<ts::Task*> tasklist){
+    //список строк
     QStringList list;
 
+    //обновляем сисок отображающихся
     currshowed = tasklist;
 
+    //заполням список строк строками с информацией каждой записи
+    //QString - qt aналлог std::string
     for(int i = 0; i < tasklist.length(); i++){
         list << QString::fromStdString(ts::to_string(*currshowed[i]));
     }
 
+    //обновляем виджет
     model->setStringList(list);
     ui->listView->setModel(model);
 }
 
+//обнвение ListView
+//показать все задачи
 void updateListW(Ui::MainWindow *ui){
+    //перерабатываем вектор записей в вектор указателей на записи
     QVector<ts::Task*> ptasks;
     for (int i = 0; i < tasks.length(); i++) {
         ptasks.append(&tasks[i]);
         std::cout << "++++++++++++" << tasks[i].name << std::endl;;
     }
-
-    currshowed = ptasks;
+    //...
     updateListW(ui, ptasks);
 }
 
+//загрузить записи
 void load(){
     try {
+        //чтение всех из файла в вектор
         tasks = ts::read();
 
+        //настоящее время в системе
         QDateTime current = QDateTime::currentDateTime();
 
+        //проверяем на просроченность
         for (int i = 0; i < tasks.length(); i++) {
             if(tasks[i].date < current.toTime_t()){
                 tasks[i].expired = true;
@@ -77,12 +88,12 @@ void load(){
 
 }
 
+//конструктор
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
     model = new QStringListModel(this);
 
     //storage_test();
@@ -91,40 +102,42 @@ MainWindow::MainWindow(QWidget *parent)
     selectedtask = NULL;//&tasks[0];
 
     updateListW(ui);
-
 }
 
+//деконструктор
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
+//диалоговое окно с текстом ошибки
 void showDialog(QWidget *p, QString msg){
+    //виджет диалогового окна
     QDialog dialog(p);
     dialog.setWindowTitle("ошибка");
     dialog.setMinimumSize(340, 80);
 
+    //надпись в окне
     QLabel *l = new QLabel(&dialog);
     l->setText(msg);
 
+    //лейоут окна
     QFormLayout *layout = new QFormLayout();
     layout->addWidget(l);
 
     dialog.setLayout(layout);
+    //показывает окно
     dialog.exec();
 }
 
+//клик по кнопке сейв
 void MainWindow::on_savebtn_clicked()
 {
-    storage_test();
-
+    //собираем информаию с виджетов
     QString name = ui->lineEdit->text();
-    //std::cout << name.toStdString() << std::endl;
 
     QString text = ui->textEdit->toPlainText();
-    //std::cout << text.toStdString() << std::endl;
 
-    //QDateTime datetime = ui->dateTimeEdit->dateTime();
     QDate date = ui->calendarWidget->selectedDate();
     QTime time = ui->timeEdit->time();
     QDateTime datetime = QDateTime(date, time);
@@ -132,16 +145,18 @@ void MainWindow::on_savebtn_clicked()
 
     bool done = ui->checkBox->isChecked();
 
+    //проверки
     if(current > datetime){
         showDialog(this, "нельзя создавать события в прошлом");
         return;
     }
 
     if(text.length() > ts::DISC_LEN){
-        showDialog(this, "слишком многобукаф");
+        showDialog(this, "слишком длинное описание");
         return;
     }
 
+    //заполнять поле описания не обязательно
     /*if(text.isEmpty()){
         showDialog(this, "текст пустой");
         return;
@@ -157,13 +172,15 @@ void MainWindow::on_savebtn_clicked()
         return;
     }
 
+    //срабатывет когда создается новая запись
     if(selectedtask == NULL){
         ts::Task task;
         task.expired = false;
         tasks.append(task);
-        selectedtask = &tasks.last();
+        selectedtask = &tasks.last(); //tasks.end()
     }
 
+    //обновляем запись
     strcpy(selectedtask->name, name.toStdString().c_str());
     strcpy(selectedtask->disc, text.toStdString().c_str());
     selectedtask->done = done;
@@ -171,13 +188,9 @@ void MainWindow::on_savebtn_clicked()
     selectedtask->date = datetime.toTime_t();
 
     try {
-        //QVector<ts::Task> tasks = ts::read();
-        for(int i = 0; i < tasks.length(); i++)
-            printf("name: %s \tdisc: %s\t done: %d\t expired: %d\ttime: %s", tasks[i].name, tasks[i].disc, tasks[i].done, tasks[i].expired, asctime(localtime(&(tasks[i].date))));
-        //tasks.append(*selectedtask);
 
         //сортировка по датам
-        //std::sort(tasks.begin(), tasks.end(), [&](ts::Task &a, ts::Task &b){ return a.date > b.date; });
+        std::sort(tasks.begin(), tasks.end(), [&](ts::Task &a, ts::Task &b){ return a.date < b.date; });
 
         ts::save(tasks);
 
