@@ -34,6 +34,8 @@ private slots:
 
     void on_deletebtn_clicked();
 
+    void on_importbtn_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

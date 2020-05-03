@@ -15,6 +15,7 @@ mainwindow.cpp
 #include <QDialogButtonBox>
 #include <QStringListModel>
 #include <QString>
+#include <QFileDialog>
 
 #include <stdlib.h>
 #include <iostream>
@@ -130,7 +131,7 @@ void showDialog(QWidget *p, QString msg){
     dialog.exec();
 }
 
-//клик по кнопке сейв
+//обрабодчик события нажатия на кнопку сейв
 void MainWindow::on_savebtn_clicked()
 {
     //собираем информаию с виджетов
@@ -177,7 +178,7 @@ void MainWindow::on_savebtn_clicked()
         ts::Task task;
         task.expired = false;
         tasks.append(task);
-        selectedtask = &tasks.last(); //tasks.end()
+        selectedtask = &tasks.last(); //tasks.end();
     }
 
     //обновляем запись
@@ -202,77 +203,7 @@ void MainWindow::on_savebtn_clicked()
     }
 }
 
-void MainWindow::on_exportbtn_clicked()
-{
-
-}
-
-void MainWindow::on_textEdit_textChanged()
-{
-    QString text = ui->textEdit->toPlainText();
-    int lenght = text.length();
-    QString l;
-    QTextStream(&l) << lenght << "/" << ts::DISC_LEN;
-
-    if(lenght > ts::DISC_LEN){
-        l = "<font color='#FF0000'>" + l + "</font>";
-    }
-    ui->charcount->setText(l);
-}
-
-
-
-void MainWindow::on_calendarWidget_selectionChanged()
-{
-    QDate selected = ui->calendarWidget->selectedDate();
-    QVector<ts::Task*> todaytasks;
-
-    //select tasks by date
-    //QVector<ts::Task> todaytasks;
-    //иттератор
-    /*for(QVector<ts::Task>::iterator it =
-        std::find_if(tasks.begin(), tasks.end(),
-                     [&selected](ts::Task t) { return QDateTime::fromTime_t(t.date).date() == selected;});
-        it != tasks.end(); ++it)
-    {
-        //std::cout << "Found : " << ts::to_string(*it) << std::endl;
-        todaytasks.append(*it);
-    }*/
-
-    for (int i = 0; i < tasks.length(); i++) {
-        if(QDateTime::fromTime_t(tasks[i].date).date() == selected){
-            todaytasks.append(&tasks[i]);
-        }
-    }
-
-    updateListW(ui, todaytasks);
-}
-
-void MainWindow::on_weekbtn_clicked()
-{
-    QDate current = QDate::currentDate();
-    QDate week = current.addDays(7);
-    std::cout << week.toString().toStdString() << std::endl;
-
-    ui->calendarWidget->setSelectedDate(current);
-    ui->calendarWidget->showSelectedDate();
-
-    QVector<ts::Task*> weektasks;
-
-    for (int i = 0; i < tasks.length(); i++) {
-        if(QDateTime::fromTime_t(tasks[i].date).date() >= current && QDateTime::fromTime_t(tasks[i].date).date() <= week){
-            weektasks.append(&tasks[i]);
-        }
-    }
-
-    updateListW(ui, weektasks);
-}
-
-void MainWindow::on_alltimebtn_clicked()
-{
-    updateListW(ui);
-}
-
+//очистка всех полей
 void clearUI(Ui::MainWindow *ui){
     selectedtask = NULL;
     ui->lineEdit->clear();
@@ -288,13 +219,104 @@ void clearUI(Ui::MainWindow *ui){
     updateListW(ui);
 }
 
+//архивирование(експорт)
+//обрабодчик события нажатия на кнопку експорт
+void MainWindow::on_exportbtn_clicked()
+{   
+    //диологовое окно выбора файла
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
+                                                    "C://",
+                                                    tr("файлы архива (*.tarch)"));
+    QFile::copy(QString::fromStdString(ts::path), fileName);
+}
+//архивирование(импорт)
+//обрабодчик события нажатия на кнопку импорт
+void MainWindow::on_importbtn_clicked()
+{
+    //диологовое окно выбора файла
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
+                                                      "C://",
+                                                      tr("файлы архива (*.tarch)"));
+    QFile::copy(fileName ,QString::fromStdString(ts::path));
+
+    load();
+    updateListW(ui);
+    clearUI(ui);
+}
+
+//обрабодчик события изменения текста в поле описания
+void MainWindow::on_textEdit_textChanged()
+{
+    //обновление счетчика длинны текста
+    QString text = ui->textEdit->toPlainText();
+    int lenght = text.length();
+    QString l;
+    QTextStream(&l) << lenght << "/" << ts::DISC_LEN;
+
+    //счетчик станет красным при привышении длинны
+    if(lenght > ts::DISC_LEN){
+        l = "<font color='#FF0000'>" + l + "</font>";
+    }
+    ui->charcount->setText(l);
+}
+
+//обрабодчик события изменения выбранной даты в календаре
+void MainWindow::on_calendarWidget_selectionChanged()
+{
+    //сосавляем список планов на этот день
+    QDate selected = ui->calendarWidget->selectedDate();
+    QVector<ts::Task*> todaytasks;
+
+    for (int i = 0; i < tasks.length(); i++) {
+        if(QDateTime::fromTime_t(tasks[i].date).date() == selected){
+            todaytasks.append(&tasks[i]);
+        }
+    }
+
+    //обновляем виджет списком планов
+    updateListW(ui, todaytasks);
+}
+
+
+//обрабодчик события нажатия на кнопку "на этой неделе"
+void MainWindow::on_weekbtn_clicked()
+{
+    //сосавляем список планов на следующии 7 дней
+    QDate current = QDate::currentDate();
+    QDate week = current.addDays(7);
+    std::cout << week.toString().toStdString() << std::endl;
+
+    ui->calendarWidget->setSelectedDate(current);
+    ui->calendarWidget->showSelectedDate();
+
+    QVector<ts::Task*> weektasks;
+
+    for (int i = 0; i < tasks.length(); i++) {
+        if(QDateTime::fromTime_t(tasks[i].date).date() >= current && QDateTime::fromTime_t(tasks[i].date).date() <= week){
+            weektasks.append(&tasks[i]);
+        }
+    }
+
+    //обновляем виджет списком планов
+    updateListW(ui, weektasks);
+}
+
+//обрабодчик события нажатия на кнопку "за все время"
+void MainWindow::on_alltimebtn_clicked()
+{
+    updateListW(ui);
+}
+
+
+
+//обрабодчик события нажатия на элемент в ListWidget
 void MainWindow::on_listView_clicked(const QModelIndex &index)
 {
-    //dssstd::cout << index.row() << "yyyyyyyyyyyyyyyyyy" << currshowed.length();
+    //находим указатель на запись по индексу
     int id = index.row();
-
     selectedtask = currshowed[id];
 
+    //выводим информацию
     ui->lineEdit->setText(selectedtask->name);
     ui->textEdit->setText(selectedtask->disc);
 
@@ -306,20 +328,28 @@ void MainWindow::on_listView_clicked(const QModelIndex &index)
     ui->checkBox->setChecked(selectedtask->done);
 }
 
-
-
+//обрабодчик события нажатия на кнопку new
 void MainWindow::on_newbtn_clicked(bool checked)
 {
     selectedtask = NULL;
     clearUI(ui);
 }
 
+//обрабодчик события нажатия на кнопку delete
 void MainWindow::on_deletebtn_clicked()
 {
+    std::cout << selectedtask;
     if(selectedtask != NULL){
-        tasks.erase(selectedtask);
+        try {
+            tasks.erase(selectedtask);
+            ts::save(tasks);
 
-        selectedtask = NULL;
-        clearUI(ui);
+            selectedtask = NULL;
+            clearUI(ui);
+        } catch (char * somthing) {
+             std::cout << somthing << std::endl;
+        }
     }
 }
+
+
