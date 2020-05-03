@@ -1,3 +1,10 @@
+/*
+mainwindow.cpp
+в файле реализованны функуии класса MainWindow: ui и основная логика работы программы
+
+
+
+*/
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -14,13 +21,20 @@
 
 #include "storage.cpp"
 
+//загруженные записями
 QVector<ts::Task> tasks;
+//указатели на те, что сейчас отображаются на экране в ListWidget
 QVector<ts::Task*> currshowed;
-
+//запись, с которой работаем в данный момент
 ts::Task * selectedtask;
 
+//qt каласс для выведения строк в qt виджетах
+//модель представляющяя данные ввиде списка строк
+//содержащая один столбик и n строчек, где n длинна списка.
 QStringListModel *model;
 
+//обновить ListView
+//
 void updateListW(Ui::MainWindow *ui, QVector<ts::Task*> tasklist){
     QStringList list;
 
