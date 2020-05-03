@@ -144,8 +144,10 @@ void MainWindow::on_savebtn_clicked()
     }
 
     if(selectedtask == NULL){
-        selectedtask = new ts::Task();
-        selectedtask->expired = false;
+        ts::Task task;
+        task.expired = false;
+        tasks.append(task);
+        selectedtask = &tasks.last();
     }
 
     strcpy(selectedtask->name, name.toStdString().c_str());
@@ -155,10 +157,10 @@ void MainWindow::on_savebtn_clicked()
     selectedtask->date = datetime.toTime_t();
 
     try {
-        QVector<ts::Task> tasks = ts::read();
+        //QVector<ts::Task> tasks = ts::read();
         for(int i = 0; i < tasks.length(); i++)
             printf("name: %s \tdisc: %s\t done: %d\t expired: %d\ttime: %s", tasks[i].name, tasks[i].disc, tasks[i].done, tasks[i].expired, asctime(localtime(&(tasks[i].date))));
-        tasks.append(*selectedtask);
+        //tasks.append(*selectedtask);
 
         //сортировка по датам
         //std::sort(tasks.begin(), tasks.end(), [&](ts::Task &a, ts::Task &b){ return a.date > b.date; });
