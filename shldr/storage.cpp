@@ -172,8 +172,8 @@ std::string to_string(Task t){
 void storage_test(){
     ts::Task * newt = new ts::Task;
 
-    strcpy(newt->name, "tea party");
-    strcpy(newt->disc, "uwu");
+    strcpy(newt->name, "бинт");
+    strcpy(newt->disc, "ь.");
     newt->done = false;
     newt->expired = false;
 

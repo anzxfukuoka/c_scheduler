@@ -18,17 +18,21 @@ public:
 private slots:
     void on_savebtn_clicked();
 
-    void on_loadbtn_clicked();
-
     void on_exportbtn_clicked();
 
     void on_textEdit_textChanged();
 
-    void on_charcount_linkHovered(const QString &link);
+    void on_calendarWidget_selectionChanged();
 
-    void on_dateTimeEdit_dateChanged(const QDate &date);
+    void on_weekbtn_clicked();
 
-    void on_scrollArea_customContextMenuRequested(const QPoint &pos);
+    void on_alltimebtn_clicked();
+
+    void on_listView_clicked(const QModelIndex &index);
+
+    void on_newbtn_clicked(bool checked);
+
+    void on_deletebtn_clicked();
 
 private:
     Ui::MainWindow *ui;
