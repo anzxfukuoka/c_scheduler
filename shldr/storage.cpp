@@ -34,7 +34,7 @@ namespace ts { //task storage
 const int NAME_LEN = 16;
 const int DISC_LEN = 240;
 
-//путь к файлу с запясями
+//путь к файлу с запясями.
 
 char *cuser = std::getenv("USERNAME");
 //std::cout << "cuser" << cuser << std::endl;
