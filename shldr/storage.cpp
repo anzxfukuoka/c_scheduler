@@ -29,21 +29,24 @@ QVector<Task> read() - считать массив с записями из фа
 
 #include <QVector>
 
+#include "encrypt.cpp"
+
 namespace ts { //task storage
 
 const int NAME_LEN = 16;
 const int DISC_LEN = 240;
+const int KEY_LEN = 64;
 
 //путь к файлу с запясями.
 
 char *cuser = std::getenv("USERNAME");
-//std::cout << "cuser" << cuser << std::endl;
 std::string user(cuser);
-//std::cout << user << std::endl;
 
-std::string path = "C:/Users/" + user + "/shelduedata.tasks"; // "C:\\Users\\Anzx\\Desktop\\CR\\data2.tasks";
+std::string path = "C:/Users/" + user + "/shelduedata.tasks";
 
 int currpos = 0;
+
+char * key = "";
 
 struct Task{
     char name[NAME_LEN];
@@ -62,21 +65,8 @@ void setpath(std::string p){
     path = p;
 }
 
-void save(Task * task){
-    FILE * f;
-
-    if ((f = fopen(path.c_str(), "ab")) != NULL){
-
-        fwrite(task, sizeof(Task), 1, f);
-    }
-    else
-    {
-        perror(WRITEEXCEPTION);
-        fclose(f);
-        throw WRITEEXCEPTION;
-    }
-
-    fclose(f);
+void setkey(char * k){
+    strcpy(key, k);
 }
 
 void save(QVector<Task> tasks){
@@ -139,6 +129,9 @@ QVector<Task> read(){
             Task * next = new Task;
             int id;
             while ((id = readone(f, next)) != -1) {
+               enc::encode(next->name, next->name, NAME_LEN, key, KEY_LEN);
+               std::cout << next->name << "_________";
+               enc::encode(next->disc, next->disc, DISC_LEN, key, KEY_LEN);
                tasks.append(*next);
             }
         }

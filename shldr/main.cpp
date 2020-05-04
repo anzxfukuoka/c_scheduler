@@ -1,13 +1,7 @@
 #include "mainwindow.h"
-
+#include <stdlib.h>
+#include <iostream>
 #include <QApplication>
-
-//#include "core.cpp"
-//#include "storage.cpp"
-
-#include <time.h>
-#include <QDate>
-#include <QTime>
 
 int main(int argc, char *argv[])
 {

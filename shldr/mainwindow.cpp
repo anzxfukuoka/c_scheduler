@@ -22,6 +22,7 @@ mainwindow.cpp
 
 #include "storage.cpp"
 
+
 //загруженные записями
 QVector<ts::Task> tasks;
 //указатели на те, что сейчас отображаются на экране в ListWidget
@@ -89,6 +90,45 @@ void load(){
 
 }
 
+//диалоговое окно с паролем
+void showPassDialog(QWidget *p){
+    //виджет диалогового окна
+    QDialog dialog(p);
+    dialog.setWindowTitle("вход");
+    dialog.setMinimumSize(340, 80);
+
+    //надпись в окне
+    QLabel *l = new QLabel(&dialog);
+    l->setText("пароль:");
+
+    //
+    QLineEdit *le = new QLineEdit(&dialog);
+
+    QDialogButtonBox *btn_box = new QDialogButtonBox(&dialog);
+    btn_box->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+
+    MainWindow::connect(btn_box, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+    MainWindow::connect(btn_box, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+
+
+    QFormLayout *layout = new QFormLayout();
+    layout->addWidget(l);
+    layout->addWidget(le);
+    layout->addWidget(btn_box);
+    dialog.setLayout(layout);
+
+    // В случае, если пользователь нажал "Ok".
+    if(dialog.exec() == QDialog::Accepted) {
+        char * pass = le->text().toLatin1().data();
+        //strcpy(pass, );
+        std::cout << "pass: " << (char*)pass << std::endl;
+        //ts::setkey(pass);
+        if(strlen(pass) > 0){
+
+        }
+    }
+}
+
 //конструктор
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -98,11 +138,15 @@ MainWindow::MainWindow(QWidget *parent)
     model = new QStringListModel(this);
 
     //storage_test();
+    //enc_test();
+
+    showPassDialog(this);
 
     load();
     selectedtask = NULL;//&tasks[0];
 
     updateListW(ui);
+
 }
 
 //деконструктор
@@ -193,6 +237,10 @@ void MainWindow::on_savebtn_clicked()
         //сортировка по датам
         std::sort(tasks.begin(), tasks.end(), [&](ts::Task &a, ts::Task &b){ return a.date < b.date; });
 
+        ts::Task task = *selectedtask;
+        enc::encode((char*)selectedtask->name, (char*)&task.name, ts::NAME_LEN, ts::key, ts::KEY_LEN);
+        enc::encode((char*)selectedtask->disc, (char*)&task.disc, ts::DISC_LEN, ts::key, ts::KEY_LEN);
+
         ts::save(tasks);
 
         //обновляем список
@@ -222,7 +270,7 @@ void clearUI(Ui::MainWindow *ui){
 //архивирование(експорт)
 //обрабодчик события нажатия на кнопку експорт
 void MainWindow::on_exportbtn_clicked()
-{   
+{
     //диологовое окно выбора файла
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
                                                     "C://",
