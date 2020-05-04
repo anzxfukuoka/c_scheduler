@@ -45,7 +45,12 @@ void updateListW(Ui::MainWindow *ui, QVector<ts::Task*> tasklist){
     //заполням список строк строками с информацией каждой записи
     //QString - qt aналлог std::string
     for(int i = 0; i < tasklist.length(); i++){
-        list << QString::fromStdString(ts::to_string(*currshowed[i]));
+        ts::Task t;
+        t = *currshowed[i];
+        enc::encode(t.name, t.name, ts::NAME_LEN, ts::key, ts::KEY_LEN);
+        enc::encode(t.disc, t.disc, ts::DISC_LEN, ts::key, ts::KEY_LEN);
+
+        list << QString::fromStdString(ts::to_string(t));
     }
 
     //обновляем виджет
@@ -117,12 +122,12 @@ void showPassDialog(QWidget *p){
 
     // В случае, если пользователь нажал "Ok".
     if(dialog.exec() == QDialog::Accepted) {
-        char * pass = le->text().toLatin1().data();
+        std::string pass = le->text().toStdString();
         //strcpy(pass, );
-        std::cout << "pass: " << (char*)pass << std::endl;
+        std::cout << "pass: " << pass << " " << strlen(pass.c_str()) << std::endl;
         //ts::setkey(pass);
-        if(strlen(pass) > 0){
-
+        if(strlen(pass.c_str()) > 0){
+            ts::setkey((char*)pass.c_str());
         }
     }
 }
@@ -231,13 +236,14 @@ void MainWindow::on_savebtn_clicked()
     selectedtask->date = datetime.toTime_t();
 
     try {
+        //ts::Task task = *selectedtask;
+        enc::encode((char*)selectedtask->name, (char*)selectedtask->name, ts::NAME_LEN, ts::key, ts::KEY_LEN);
+        enc::encode((char*)selectedtask->disc, (char*)selectedtask->disc, ts::DISC_LEN, ts::key, ts::KEY_LEN);
+
+        std::cout << selectedtask->name << " :: " << selectedtask->disc << std::endl;
 
         //сортировка по датам
         std::sort(tasks.begin(), tasks.end(), [&](ts::Task &a, ts::Task &b){ return a.date < b.date; });
-
-        ts::Task task = *selectedtask;
-        enc::encode((char*)selectedtask->name, (char*)&task.name, ts::NAME_LEN, ts::key, ts::KEY_LEN);
-        enc::encode((char*)selectedtask->disc, (char*)&task.disc, ts::DISC_LEN, ts::key, ts::KEY_LEN);
 
         ts::save(tasks);
 

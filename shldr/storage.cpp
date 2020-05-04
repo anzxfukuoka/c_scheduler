@@ -46,7 +46,7 @@ std::string path = "C:/Users/" + user + "/shelduedata.tasks";
 
 int currpos = 0;
 
-char * key = "";
+char key[KEY_LEN] = "";
 
 struct Task{
     char name[NAME_LEN];
@@ -129,9 +129,6 @@ QVector<Task> read(){
             Task * next = new Task;
             int id;
             while ((id = readone(f, next)) != -1) {
-               enc::encode(next->name, next->name, NAME_LEN, key, KEY_LEN);
-               std::cout << next->name << "_________";
-               enc::encode(next->disc, next->disc, DISC_LEN, key, KEY_LEN);
                tasks.append(*next);
             }
         }
