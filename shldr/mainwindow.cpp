@@ -227,6 +227,7 @@ void MainWindow::on_exportbtn_clicked()
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
                                                     "C://",
                                                     tr("файлы архива (*.tarch)"));
+    QFile::remove(fileName);
     QFile::copy(QString::fromStdString(ts::path), fileName);
 }
 //архивирование(импорт)
@@ -237,6 +238,7 @@ void MainWindow::on_importbtn_clicked()
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                       "C://",
                                                       tr("файлы архива (*.tarch)"));
+    QFile::remove(QString::fromStdString(ts::path));
     QFile::copy(fileName ,QString::fromStdString(ts::path));
 
     load();
