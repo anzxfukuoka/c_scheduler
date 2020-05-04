@@ -2,8 +2,6 @@
 mainwindow.cpp
 в файле реализованны функуии класса MainWindow: ui и основная логика работы программы
 
-
-
 */
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
